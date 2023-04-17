@@ -59,9 +59,6 @@ class _guessNumberState extends State<guessNumber> {
                       ),
                       keyboardType:
                           TextInputType.number, //limitamos input a numero
-                      // onSubmitted: (String value) {
-                      //   print('El valor de value es $value');
-                      //   controller.setguess(value);},//to string pq hay un error y creo que lo esta tomando como entero
                       maxLength: 1, //maximo un caracter
                       onChanged: (String value) {
                         //quiero bloquear que repita un valor

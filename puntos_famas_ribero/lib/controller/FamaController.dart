@@ -15,10 +15,12 @@ class FamaController extends GetxController {
   var numPlayer1 = 0;
   var numPlayer11 = 0;
   var numPlayer2 = 0;
+  var ganador = 0;
   int currentPlayer = 0;//1 o 2 para multijugador
   String guess = '';
   List famas = [];
   List puntos = [];
+  int numIntentosMulti = 0;//para comparar y ver quien gano
 
   int randNumb(int dificultad) {
     var numberStr = '';
@@ -75,28 +77,52 @@ class FamaController extends GetxController {
     setFamasPuntos(checkedGuess);
     //reviso si gano
     if ('2'*guess.length  == checkedGuess){//si el numero de famas es igual al numero de digitos entonces gano pues 2 representa fama
-      showDialog(context: context, builder: (BuildContext context) { return AlertDialog(
-        title: Text('Ganaste'),
-        content: Text('En :${numIntentos.value}Intentos'),
+      if(modoJuego.value==0){
+        showDialog(context: context, builder: (BuildContext context) { return AlertDialog(
+          title: Text('Ganaste'),
+          content: Text('En :${numIntentos.value}Intentos'),
           actions: [TextButton(onPressed: () {
-            if (modoJuego.value==0){
+              Get.offAllNamed('/');
+          }
+              , child: Text('ok'))], //get.back() es para cerrar el dialogo
+        ); } );
+      }
+      else{//estamos en multijugador
+        if(currentPlayer==1){//gano el jugador 1
+          // showDialog(context: context, builder: (BuildContext context) { return AlertDialog(
+          //   title: Text('Acabaste el turno, jugador 1'),
+          //   content: Text( 'En :${numIntentos.value}Intentos' ),
+          //   actions: [TextButton(onPressed: () {
+          //     numIntentosMulti=numIntentos.value;
+          //     resetFamasPuntos();
+          //     changePlayer();
+          //     //Get.to(() => guessNumber() );
+          //     Get.back();
+          //   }
+          //       , child: Text('ok'))], //get.back() es para cerrar el dialogo
+          // ); } );
+          numIntentosMulti=numIntentos.value;
+          resetFamasPuntos();
+          changePlayer();
+          Get.to(() => guessNumber() );
+        }
+        else{//Aqui es cuando hacemos el otro alert dialog
+          ganador = numIntentosMulti<numIntentos.value?1:(numIntentosMulti>numIntentos.value?2:3);//3 significa que empataron
+          showDialog(context: context, builder: (BuildContext context) { return AlertDialog(
+            title: Text(ganador!=3?'Ganaste jugador $ganador':'Empate'),
+            content: Text(ganador!=3?( ganador==1?'En :${numIntentosMulti}Intentos':'En :${numIntentos.value}Intentos'   ) : 'En :${numIntentos.value}Intentos'),
+            actions: [TextButton(onPressed: () {
+              resetPlayer112();
+              resetFamasPuntos();
+              changePlayer();
               Get.offAllNamed('/');
             }
-            else{
-              if(currentPlayer==1){
-                resetFamasPuntos();
-                changePlayer();
-                Get.back();
-              }
-              else{
-                resetFamasPuntos();
-                changePlayer();
-                Get.offAllNamed('/');
-              }
-            }
-          }
-           , child: Text('ok'))], //get.back() es para cerrar el dialogo
-      ); } );
+                , child: Text('ok'))], //get.back() es para cerrar el dialogo
+          ); } );
+        }
+      }
+
+
     }
     //Ahora borramos el input de la pantalla usando los controllers de los textfields y el de la variable guess
     guess = '';
@@ -222,4 +248,12 @@ class FamaController extends GetxController {
     return currentPlayer;
   }
 
+  void resetPlayer112() {
+    numPlayer1 = 0;
+    numPlayer11 = 0;
+    numPlayer2 = 0;
+    numIntentosMulti=0;
+    ganador=0;
+  }
 }
+
