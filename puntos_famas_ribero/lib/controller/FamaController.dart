@@ -11,7 +11,7 @@ class FamaController extends GetxController {
   var dificultadMulti = 0
       .obs; //se almacena para garantizar que el numero ingresado tenga el mismo lenght para ambos
   var modoJuego = 1.obs; //1 indica multijugador y 0 solitario
-  var numIntentos = 0.obs;
+  var numIntentos = 0.0.obs;
   var numPlayer1 = 0;
   var numPlayer11 = 0;
   var numPlayer2 = 0;
@@ -20,7 +20,8 @@ class FamaController extends GetxController {
   String guess = '';
   List famas = [];
   List puntos = [];
-  int numIntentosMulti = 0;//para comparar y ver quien gano
+  double numIntentosMulti = 0;//para comparar y ver quien gano
+  List pista = [];
 
   int randNumb(int dificultad) {
     var numberStr = '';
@@ -102,6 +103,7 @@ class FamaController extends GetxController {
           //       , child: Text('ok'))], //get.back() es para cerrar el dialogo
           // ); } );
           numIntentosMulti=numIntentos.value;
+          pista = [];
           resetFamasPuntos();
           changePlayer();
           Get.to(() => guessNumber() );
@@ -135,6 +137,7 @@ class FamaController extends GetxController {
   void multSol(){
     print('entro a multSol ${modoJuego.value}');
     if (modoJuego==0){//esta en modo solitario quiero que genere un numero aleatorio y ademas lo mande a guessNumber
+      currentPlayer=0;//evita el error de que currentPlayer no esta inicializado luego de una partida multijugador
       print('previo a generar numero');
       setnumPlayer1();
       print('numero generado ${numPlayer1}');
@@ -177,7 +180,7 @@ class FamaController extends GetxController {
     numPlayer2 = num;
   }
 
-  void setIntentos(int num) {
+  void setIntentos(double num) {
     numIntentos.value = num;
   }
 
@@ -195,6 +198,28 @@ class FamaController extends GetxController {
     }
   }
 
+  void setPista(){
+    String randomAux = numPlayer1.toString();//el randomAux es el string a adivinar
+    //Ahora veamos que jugador esta activo
+    if (currentPlayer==1) {//esto debo resetearlo de alguna forma para que no se quede en 2 cuando pase a eso, debe retornar a 1
+      randomAux = numPlayer11.toString();
+      print('randomAux: $randomAux de player 1');
+    }
+    else if(currentPlayer==2) {
+      randomAux = numPlayer2.toString();
+      print('randomAux: $randomAux de player 2');
+    }
+    //copiar procedimiento del randomaux en helperPF para encontrar el string a adivinar
+    pista = List.filled(famas.length, '_');
+    print('pista: $pista');
+    for (int i = 0; i < famas.length; i++) {
+      if (famas[i] == '_') {//significa que no hay fama en esa posicion y se la paso como pista
+        pista[i] = randomAux[i];//aqui no es famas es el string que debo adivinar
+        break;
+      }
+    }
+  }
+
   void resetFamasPuntos(){
     famas = [];
     puntos = [];
@@ -205,8 +230,12 @@ class FamaController extends GetxController {
     return modoJuego.value;
   }
 
-  int getIntentos() {
+  double getIntentos() {
     return numIntentos.value;
+  }
+
+  double getIntentosMulti() {
+    return numIntentosMulti;
   }
 
   int getDificultyMult() {
@@ -240,7 +269,7 @@ class FamaController extends GetxController {
     if (currentPlayer == 1) {
       currentPlayer = 2;
     } else {
-      currentPlayer = 1;
+      currentPlayer = 1;//pues ya termino el juego
     }
   }
 
@@ -248,7 +277,13 @@ class FamaController extends GetxController {
     return currentPlayer;
   }
 
+  getpista(){
+    print('pista: $pista');
+    return pista;
+  }
+
   void resetPlayer112() {
+    pista = [];
     numPlayer1 = 0;
     numPlayer11 = 0;
     numPlayer2 = 0;

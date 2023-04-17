@@ -46,6 +46,22 @@ class _guessNumberState extends State<guessNumber> {
                     Text('Famas: ${controller.getFamas()}'),
                     if(controller.modoJuego.value==1)
                       Text('Jugando: ${ controller.getJugadorActual()==1 ? '2' : '1'  }'),
+                    ElevatedButton(onPressed: ()
+                        {
+                          double? intentosActuales = 0.0;
+                          if(controller.modoJuego==0){
+                            intentosActuales = controller.numIntentos.value;
+                          }
+                          else{//multijugador
+                            intentosActuales = controller.getIntentosMulti()>0?controller.getIntentos():controller.getIntentosMulti();
+                            print('multi intentos $intentosActuales' );
+                          }
+                          controller.setIntentos(intentosActuales+0.5);
+                          controller.setPista();
+                          setState(() {});//tras dar la pista y actualizar los intentos debemos reflejar el cambio en pantalla
+                        }
+                        , child: Text('Pista') ),
+                    Text('Pista: ${controller.getpista()}'),
                   ],
                 ),
                 Column(children: [
