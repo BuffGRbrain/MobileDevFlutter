@@ -15,25 +15,10 @@ class FamaController extends GetxController {
   var numPlayer1 = 0;
   var numPlayer11 = 0;
   var numPlayer2 = 0;
-  int currentPlayer = 1;//1 o 2 para multijugador
+  int currentPlayer = 0;//1 o 2 para multijugador
   String guess = '';
   List famas = [];
   List puntos = [];
-
-  //random = randNumb(dificultad).obs; //solo hacerlo si el modo de juego es solitario
-  // bool checkRepe(String num) {
-  //   //retorna true si hay un numero repetido
-  //   //var listNum = List<int>.filled(numAux.length, 0);
-  //   for (int i = 0; i < num.length; i++) {
-  //     int numActual = int.parse(num[i]);
-  //     for (int j = 0; j < num.length - i; i++) {
-  //       if (numActual == int.parse(num[i])) {
-  //         return true; //significa que hay un numero repetido
-  //       }
-  //     }
-  //   }
-  //   return false;
-  // }
 
   int randNumb(int dificultad) {
     var numberStr = '';
@@ -59,10 +44,13 @@ class FamaController extends GetxController {
     //Ahora veamos que jugador esta activo
     if (currentPlayer==1) {//esto debo resetearlo de alguna forma para que no se quede en 2 cuando pase a eso, debe retornar a 1
       randomAux = numPlayer11.toString();
-    } else {
-      randomAux = numPlayer2.toString();
+      print('randomAux: $randomAux de player 1');
     }
-
+    else if(currentPlayer==2) {
+      randomAux = numPlayer2.toString();
+      print('randomAux: $randomAux de player 2');
+    }
+    print("Comparando $guess con $randomAux");
     for (int i = 0; i < guess.length; i++) {
       //uso que guess y randomAux tienen el mismo length
       if (randomAux.contains(guess[i])) {
@@ -128,6 +116,7 @@ class FamaController extends GetxController {
       Get.to(() => guessNumber() );
     }
     else{//esta en multijugador PENDIENTE ALMACENAR LOS NUMEROS DE CADA JUGADOR usando los setters e inputs de cada uno
+      currentPlayer=1;//Lo inicializa en 1 para que empiece el jugador 1
       resetFamasPuntos();
       { Get.to(() => MultiNumber() );}
     }

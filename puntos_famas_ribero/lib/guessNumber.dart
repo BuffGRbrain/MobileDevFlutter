@@ -44,7 +44,8 @@ class _guessNumberState extends State<guessNumber> {
                     Text('Intento: ${controller.getIntentos()}'),
                     Text('Puntos: ${controller.getPuntos()}'),
                     Text('Famas: ${controller.getFamas()}'),
-                    Text('Jugando: ${ controller.getJugadorActual()==1 ? '2' : '1'  }'),
+                    if(controller.modoJuego.value==1)
+                      Text('Jugando: ${ controller.getJugadorActual()==1 ? '2' : '1'  }'),
                   ],
                 ),
                 Column(children: [
