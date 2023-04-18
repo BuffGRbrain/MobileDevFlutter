@@ -131,6 +131,7 @@ class FamaController extends GetxController {
   }
 
   void multSol(){
+    letal=false;
     print('entro a multSol ${modoJuego.value}');
     if (modoJuego==0){//esta en modo solitario quiero que genere un numero aleatorio y ademas lo mande a guessNumber
       currentPlayer=0;//evita el error de que currentPlayer no esta inicializado luego de una partida multijugador
