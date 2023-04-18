@@ -67,13 +67,23 @@ class _MultiNumberState extends State<MultiNumber> {
                             //voy guardando esto en un string y en cada iteracion lo concateno
                             tmp2 = tmp2 + controllers[i].text;
                           }
-                          //quiero pasar lo de arriba a un if
-                          if(controller.getnumPlayer11() ==0){
-                            controller.setnumPlayer11(int.parse(tmp2));
+                          //Aqui meto los inputs a los numeros de cada jugador
+                          if(controller.letal == false){
+                            if(controller.getnumPlayer11() ==0){
+                              controller.setnumPlayer11(int.parse(tmp2));
+                            }
+                            else{
+                              controller.setnumPlayer2(int.parse(tmp2));
+                            }
+                          }else{//letal mode
+                            if(controller.getnumPlayer11Letal() == ''){//si no esta seteado
+                              controller.setnumPlayer11Letal(tmp2);
+                            }
+                            else{
+                              controller.setnumPlayer2Letal(tmp2);
+                            }
                           }
-                          else{
-                            controller.setnumPlayer2(int.parse(tmp2));
-                          }
+                          //Aqui meto los inputs a los numeros de cada jugador
 
                           tmp2 = '';
                           //Ahora debemos borrar los valores de los controllers
@@ -82,10 +92,27 @@ class _MultiNumberState extends State<MultiNumber> {
                           }
                           controller.changePlayer();
                           setState(() {});
-                          if(controller.getnumPlayer11() != 0 && controller.getnumPlayer2() != 0){
-                            //si ya ambos jugadores ingresaron su numero entonces go to guessNumber
-                            Get.to(() => guessNumber());
+                          if(controller.letal==false){
+                            if(controller.getnumPlayer11() != 0 && controller.getnumPlayer2() != 0){
+                              //si ya ambos jugadores ingresaron su numero entonces go to guessNumber
+                              Get.to(() => guessNumber());
+                            }
+                          }else{
+                            print('Letal es falso');
+                            if(controller.getnumPlayer11Letal() != '' && controller.getnumPlayer2Letal() != ''){
+                              print("Ya seteo los numeros hexa de los dos jugadores: ${controller.getnumPlayer11Letal()} y ${controller.getnumPlayer2Letal()} ");
+                              //si ya ambos jugadores ingresaron su numero entonces go to guessNumber
+                              Get.to(() => guessNumber());
+                            }
+                            print("Los numeros de cada jugador son ${controller.getnumPlayer11Letal()} y ${controller.getnumPlayer2Letal()}");
+                            if(controller.getnumPlayer11Letal()!=''){
+                              print("UNICO Y DETERGENTE 1");
+                            }
+                            if(controller.getnumPlayer2Letal()!=''){
+                              print("UNICO Y DETERGENTE 2");
+                            }
                           }
+
                         }, child: Text('Pasele el telefono al otro jugador'))//si ya tiene valor para 11 y 2 entonces go to guess Number
                       ]
                     //meter un if aqui o una funcion que enrede a controller.clear y así que si ya ambos inresaron pase a guessNumber pero tener un active player

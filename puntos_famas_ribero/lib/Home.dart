@@ -42,7 +42,8 @@ class _MyHomeState extends State<MyHome> {
                 onChanged:(String value) { controller.modoJuego.value == 0 ? controller.setDificultySol(int.parse(value)) : controller.setDificultyMult(int.parse(value))  ; } ,//Si es multijugador almacenamos el valor.
                 maxLength: 1,
               ),
-              ElevatedButton(onPressed: () => controller.multSol(), child: Text('Que inicie el juego'),)
+              ElevatedButton(onPressed: () => controller.multSol(), child: Text('Que inicie el juego'),),
+              ElevatedButton(onPressed: () => controller.letalmode(), child: Text('Letal'))
             ],
           )
         ),

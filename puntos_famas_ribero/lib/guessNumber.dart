@@ -46,7 +46,7 @@ class _guessNumberState extends State<guessNumber> {
                     Text('Famas: ${controller.getFamas()}'),
                     if(controller.modoJuego.value==1)
                       Text('Jugando: ${ controller.getJugadorActual()==1 ? '2' : '1'  }'),
-                    ElevatedButton(onPressed: ()
+                    ElevatedButton(onPressed: ()//PENDIENTE PASAR ESTO A USAR TAMBIEN LO LETAL
                         {
                           double? intentosActuales = 0.0;
                           if(controller.modoJuego==0){
@@ -57,11 +57,15 @@ class _guessNumberState extends State<guessNumber> {
                             print('multi intentos $intentosActuales' );
                           }
                           controller.setIntentos(intentosActuales+0.5);
-                          controller.setPista();
+                          if(controller.letal == false){
+                            controller.setPista();
+                          }else{
+                            controller.setPistaLetal();
+                          }
                           setState(() {});//tras dar la pista y actualizar los intentos debemos reflejar el cambio en pantalla
                         }
                         , child: Text('Pista') ),
-                    Text('Pista: ${controller.getpista()}'),
+                    Text('Pista: ${controller.getpista()}'),//ya el getter manda la normal o la letal segun el modo
                   ],
                 ),
                 Column(children: [
@@ -101,7 +105,12 @@ class _guessNumberState extends State<guessNumber> {
                               'El tipo de controllers[i] es ${controllers[i].text.runtimeType}'); //es un TextEditingController pero debe ser un int pq pasa esto?
                           controller.setguess(controllers[i].text);
                         }
-                        controller.helperPF(context, controllers);
+                        if(controller.letal == false){
+                          controller.helperPF(context, controllers);
+                        } else{
+                          controller.helperPFLetal(context,controllers);
+                        }
+
                         setState(() {});
                       },
                       child: Text('Compararar'))
