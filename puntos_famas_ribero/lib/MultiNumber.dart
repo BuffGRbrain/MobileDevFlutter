@@ -13,7 +13,7 @@ class _MultiNumberState extends State<MultiNumber> {
   @override
   Widget build(BuildContext context) {
     FamaController controller = Get.find();
-    int numControllers = controller.getDificultyMult(); //PENDIENTE PASAR ESTO A UN GET GENERAL PARA AMBOS MODOS DE JUEGO
+    int numControllers = controller.getDificultyMult();
     String tmp = '?' * (numControllers + 1);
     String tmp2 = '';
     List<TextEditingController> controllers = List.generate( numControllers, (_) => TextEditingController());
@@ -34,7 +34,7 @@ class _MultiNumberState extends State<MultiNumber> {
                     ],
                   ),
                   Column(
-                      children: [...List.generate( numControllers , (index) => TextField(//lo pasamos a string y usamos el lenght pues queremos la cantidad de elemetos
+                      children: [...List.generate( numControllers , (index) => TextField(
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                         ),
@@ -47,7 +47,7 @@ class _MultiNumberState extends State<MultiNumber> {
                             controllers[index].clear();
                           }
                           tmp = tmp.replaceRange(index, index + 1,
-                              value); //equivale a reemplazar esa poser por el valor
+                              value); //equivale a reemplazar esa pose por el valor
                         },
                         maxLength: 1,
                         controller: controllers[index] ,
@@ -55,15 +55,7 @@ class _MultiNumberState extends State<MultiNumber> {
                       ),
                         ElevatedButton(onPressed: (){//debe modificar el jugador actual con cada press del boton
                           tmp = '?' * (numControllers + 1);
-                          print(
-                              'FUI OPRIMIDO OH QUE TRRISSSSTE ${controllers[0].text}');
                           for (int i = 0; i < controllers.length; i++) {
-                            print('El valor de i es $i');
-                            print(
-                                'El valor de controllers[i] es ${controllers[i].text}');
-                            print(
-                                'El tipo de controllers[i] es ${controllers[i].text.runtimeType}'); //es un TextEditingController pero debe ser un int pq pasa esto?
-                            //si el 11 no ha ingreado su valor entonces lo almacena y dlc y si ya lo hizo entonces almacena el 2
                             //voy guardando esto en un string y en cada iteracion lo concateno
                             tmp2 = tmp2 + controllers[i].text;
                           }
@@ -98,24 +90,14 @@ class _MultiNumberState extends State<MultiNumber> {
                               Get.to(() => guessNumber());
                             }
                           }else{
-                            print('Letal es falso');
                             if(controller.getnumPlayer11Letal() != '' && controller.getnumPlayer2Letal() != ''){
-                              print("Ya seteo los numeros hexa de los dos jugadores: ${controller.getnumPlayer11Letal()} y ${controller.getnumPlayer2Letal()} ");
                               //si ya ambos jugadores ingresaron su numero entonces go to guessNumber
                               Get.to(() => guessNumber());
-                            }
-                            print("Los numeros de cada jugador son ${controller.getnumPlayer11Letal()} y ${controller.getnumPlayer2Letal()}");
-                            if(controller.getnumPlayer11Letal()!=''){
-                              print("UNICO Y DETERGENTE 1");
-                            }
-                            if(controller.getnumPlayer2Letal()!=''){
-                              print("UNICO Y DETERGENTE 2");
                             }
                           }
 
                         }, child: Text('Pasele el telefono al otro jugador'))//si ya tiene valor para 11 y 2 entonces go to guess Number
                       ]
-                    //meter un if aqui o una funcion que enrede a controller.clear y así que si ya ambos inresaron pase a guessNumber pero tener un active player
                   )
                 ],
             )

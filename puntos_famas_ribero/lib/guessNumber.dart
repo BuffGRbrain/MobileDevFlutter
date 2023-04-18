@@ -1,7 +1,3 @@
-//esta tiene una ventana con 3,4 o 5 widgets que reciben el input del usuario y usa controller para puntos
-//esta pagina tiene dos estados una para adivinar el numero y otra para ingresarlo, así se puede utilizar
-//en ambos modos de juego multijugador y solitario.
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -19,7 +15,7 @@ class _guessNumberState extends State<guessNumber> {
     FamaController controller = Get.find();
     int numControllers = (controller.modoJuego.value==0)? controller
         .getDificultySol():controller.getDificultyMult()
-    ; //PENDIENTE PASAR ESTO A UN GET GENERAL PARA AMBOS MODOS DE JUEGO
+    ;
     List<TextEditingController> controllers =
         List.generate(numControllers, (_) => TextEditingController());
     int difiMult = controller.getDificultyMult();
@@ -46,7 +42,7 @@ class _guessNumberState extends State<guessNumber> {
                     Text('Famas: ${controller.getFamas()}'),
                     if(controller.modoJuego.value==1)
                       Text('Jugando: ${ controller.getJugadorActual()==1 ? '2' : '1'  }'),
-                    ElevatedButton(onPressed: ()//PENDIENTE PASAR ESTO A USAR TAMBIEN LO LETAL
+                    ElevatedButton(onPressed: ()
                         {
                           double? intentosActuales = 0.0;
                           if(controller.modoJuego==0){
@@ -72,39 +68,32 @@ class _guessNumberState extends State<guessNumber> {
                   ...List.generate(
                     numControllers,
                     (index) => TextField(
-                      //lo pasamos a string y usamos el lenght pues queremos la cantidad de elemetos
                       controller: controllers[index],
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                       ),
                       keyboardType:
-                          TextInputType.number, //limitamos input a numero
+                          TextInputType.number, //limitamos input a numeros en telefono
                       maxLength: 1, //maximo un caracter
                       onChanged: (String value) {
                         //quiero bloquear que repita un valor
                         if (tmp.contains(value)) {
-                          //si el valor ya esta en la lista de controllers entonces no se puede ingresar
+                          //si el valor ya esta en la lista de textos de los controllers entonces no se puede ingresar
                           print('El valor de value es $value');
-                          controllers[index].clear();
+                          controllers[index].clear();//lo borra para obligar a que el usuario ingrese otro valor
                         }
                         tmp = tmp.replaceRange(index, index + 1,
-                            value); //equivale a reemplazar esa poser por el valor
+                            value); //equivale a reemplazar esa pose por el valor
                       },
                     ),
                   ),
                   ElevatedButton(
                       onPressed: () {
-                        tmp = '?' * (numControllers + 1);
-                        print(
-                            'FUI OPRIMIDO OH QUE TRRISSSSTE ${controllers[0].text}');
+                        tmp = '?' * (numControllers + 1);//reiniciamos el tmp para compara en el siguiente caso
                         for (int i = 0; i < controllers.length; i++) {
-                          print('El valor de i es $i');
-                          print(
-                              'El valor de controllers[i] es ${controllers[i].text}');
-                          print(
-                              'El tipo de controllers[i] es ${controllers[i].text.runtimeType}'); //es un TextEditingController pero debe ser un int pq pasa esto?
                           controller.setguess(controllers[i].text);
                         }
+                        //si es letal o no usamos un helper distinto
                         if(controller.letal == false){
                           controller.helperPF(context, controllers);
                         } else{

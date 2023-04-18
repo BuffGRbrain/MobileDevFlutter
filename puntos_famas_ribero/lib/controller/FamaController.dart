@@ -9,9 +9,9 @@ import '../guessNumber.dart';
 class FamaController extends GetxController {
   var dificultadSolitario = 0.obs;
   var dificultadMulti = 0
-      .obs; //se almacena para garantizar que el numero ingresado tenga el mismo lenght para ambos
+      .obs; //se almacena para garantizar que el numero ingresado tenga el mismo lenght para ambos EN MULTIJUGADOR
   var modoJuego = 1.obs; //1 indica multijugador y 0 solitario
-  var numIntentos = 0.0.obs;
+  var numIntentos = 0.0.obs;//double para poder sumar 0.5 turnos con cada pista
   var numPlayer1 = 0;
   var numPlayer11 = 0;
   var numPlayer2 = 0;
@@ -24,7 +24,7 @@ class FamaController extends GetxController {
   List pista = [];
   List pistaLetal = [];
   bool letal = false;//se cambia a true en el modo letal
-  List hexa = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'];
+  List hexa = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'];//para generar el numero hexa aleatorio en el modo letal
   var numPlayer1Letal = '';
   var numPlayer2Letal = '';
   var numPlayer11Letal = '';
@@ -40,18 +40,16 @@ class FamaController extends GetxController {
           ? print('repeated number generated, recalculating...')
           : numberStr += candidate.toString();
     }
-    print(numberStr);
     return int.parse(numberStr);
   }
 
   String pftotal() {
     //retorna un string con 2 si es fama, 1 si es punto y 0 si es fallo en cada posicion, ademas de vacio si hay algun numero repetido para poder identificarlo
-    print('Valores recibidos${guess} y ${numPlayer1}');
     String total = '';
     String randomAux = numPlayer1.toString();
 
     //Ahora veamos que jugador esta activo
-    if (currentPlayer==1) {//esto debo resetearlo de alguna forma para que no se quede en 2 cuando pase a eso, debe retornar a 1
+    if (currentPlayer==1) {
       randomAux = numPlayer11.toString();
       print('randomAux: $randomAux de player 1');
     }
@@ -59,7 +57,7 @@ class FamaController extends GetxController {
       randomAux = numPlayer2.toString();
       print('randomAux: $randomAux de player 2');
     }
-    print("Comparando $guess con $randomAux");
+    print("Comparando $guess con $randomAux");//solo se muestra en consola y hace más fácil hacer las pruebas
     for (int i = 0; i < guess.length; i++) {
       //uso que guess y randomAux tienen el mismo length
       if (randomAux.contains(guess[i])) {
@@ -84,16 +82,16 @@ class FamaController extends GetxController {
     setFamasPuntos(checkedGuess);
     //reviso si gano
     if ('2'*guess.length  == checkedGuess){//si el numero de famas es igual al numero de digitos entonces gano pues 2 representa fama
-      if(modoJuego.value==0){
+      if(modoJuego.value==0){//estamos en solitario
         showDialog(context: context, builder: (BuildContext context) { return AlertDialog(
           title: Text('Ganaste'),
           content: Text('En :${numIntentos.value}Intentos'),
           actions: [TextButton(onPressed: () {
               pista = [];
               resetFamasPuntos();
-              Get.offAllNamed('/');
+              Get.offAllNamed('/');//vuelve al home
           }
-              , child: Text('ok'))], //get.back() es para cerrar el dialogo
+              , child: Text('ok'))],
         ); } );
       }
       else{//estamos en multijugador
@@ -102,9 +100,9 @@ class FamaController extends GetxController {
           pista = [];
           resetFamasPuntos();
           changePlayer();
-          Get.to(() => guessNumber() );
+          Get.to(() => guessNumber() );//gano el 1 pero aun falta que el 2 termine para ver quien gano entre los dos
         }
-        else{//Aqui es cuando hacemos el otro alert dialog
+        else{//Aqui es cuando hacemos el otro alert dialog pues se cual de los dos gano o si empataron
           ganador = numIntentosMulti<numIntentos.value?1:(numIntentosMulti>numIntentos.value?2:3);//3 significa que empataron
           showDialog(context: context, builder: (BuildContext context) { return AlertDialog(
             title: Text(ganador!=3?'Ganaste jugador $ganador':'Empate'),
@@ -115,7 +113,7 @@ class FamaController extends GetxController {
               changePlayer();
               Get.offAllNamed('/');
             }
-                , child: Text('ok'))], //get.back() es para cerrar el dialogo
+                , child: Text('ok'))],
           ); } );
         }
       }
@@ -141,7 +139,7 @@ class FamaController extends GetxController {
       resetFamasPuntos();
       Get.to(() => guessNumber() );
     }
-    else{//esta en multijugador PENDIENTE ALMACENAR LOS NUMEROS DE CADA JUGADOR usando los setters e inputs de cada uno
+    else{//esta en multijugador
       currentPlayer=1;//Lo inicializa en 1 para que empiece el jugador 1
       resetFamasPuntos();
       { Get.to(() => MultiNumber() );}
@@ -162,10 +160,10 @@ class FamaController extends GetxController {
 
   void setguess(String g) {
     print(guess);
-    guess = guess + g; //concatenate the strings
+    guess = guess + g; //aprovecho que es un string y lo voy concatenando
   }
 
-  void setnumPlayer1() {
+  void setnumPlayer1() {//involucra los dos casos de solitario en letal y normal
     if(letal==false){
       numPlayer1 = randNumb(getDificultySol());
     }else{
@@ -200,12 +198,11 @@ class FamaController extends GetxController {
     numIntentos.value = num;
   }
 
-  void setFamasPuntos(String checkedGuess) {//si es 2 entonces es fama dlc no lo es, ademas uso guess
-    //var guessed = guess; //guardo el valor de guess en una variable auxiliar
+  void setFamasPuntos(String checkedGuess) {//si es 2 entonces es fama dlc no lo es, ademas uso guess para comparar con el numero a adivinar
+    //inicializa en vacio con _ para que sea facil ver la posicion de las famas
     famas = List.filled(checkedGuess.length, '_');
     puntos = List.filled(checkedGuess.length, '_');
     for (int i = 0; i < checkedGuess.length; i++) {
-      //debo poner un _ si no es ni fama ni punto en famas y puntos
       if (checkedGuess[i] == '2') {
         famas[i] = guess[i];
       } else if (checkedGuess[i] == '1') {
@@ -217,7 +214,7 @@ class FamaController extends GetxController {
   void setPista(){
     String randomAux = numPlayer1.toString();//el randomAux es el string a adivinar
     //Ahora veamos que jugador esta activo
-    if (currentPlayer==1) {//esto debo resetearlo de alguna forma para que no se quede en 2 cuando pase a eso, debe retornar a 1
+    if (currentPlayer==1) {
       randomAux = numPlayer11.toString();
       print('randomAux: $randomAux de player 1');
     }
@@ -225,12 +222,11 @@ class FamaController extends GetxController {
       randomAux = numPlayer2.toString();
       print('randomAux: $randomAux de player 2');
     }
-    //copiar procedimiento del randomaux en helperPF para encontrar el string a adivinar
     pista = List.filled(famas.length, '_');
     print('pista: $pista');
     for (int i = 0; i < famas.length; i++) {
       if (famas[i] == '_') {//significa que no hay fama en esa posicion y se la paso como pista
-        pista[i] = randomAux[i];//aqui no es famas es el string que debo adivinar
+        pista[i] = randomAux[i];
         break;
       }
     }
@@ -241,7 +237,7 @@ class FamaController extends GetxController {
     String randomAux = numPlayer1Letal;//el randomAux es el string a adivinar
     print('randomAux: $randomAux de player 1 en el modo letal');
     //Ahora veamos que jugador esta activo
-    if (currentPlayer==1) {//esto debo resetearlo de alguna forma para que no se quede en 2 cuando pase a eso, debe retornar a 1
+    if (currentPlayer==1) {
       randomAux = numPlayer11Letal;
       print('randomAux: $randomAux de player 1');
     }
@@ -253,8 +249,8 @@ class FamaController extends GetxController {
     pistaLetal = List.filled(famas.length, '_');
     print('pista: $pistaLetal');
     for (int i = 0; i < famas.length; i++) {
-      if (famas[i] == '_') {//significa que no hay fama en esa posicion y se la paso como pista
-        pistaLetal[i] = randomAux[i];//aqui no es famas es el string que debo adivinar
+      if (famas[i] == '_') {//significa que no hay fama en esa posicion y se la paso como pista letal
+        pistaLetal[i] = randomAux[i];
         break;
       }
     }
@@ -321,7 +317,7 @@ class FamaController extends GetxController {
     if (currentPlayer == 1) {
       currentPlayer = 2;
     } else {
-      currentPlayer = 1;//pues ya termino el juego
+      currentPlayer = 1;//pues ya termino el juego, lo deja seteado para la siguiente partida de multijugador
     }
   }
 
@@ -365,7 +361,7 @@ class FamaController extends GetxController {
       resetFamasPuntos();
       Get.to(() => guessNumber() );
     }
-    else{//esta en multijugador PENDIENTE ALMACENAR LOS NUMEROS DE CADA JUGADOR usando los setters e inputs de cada uno
+    else{//esta en multijugador
       currentPlayer=1;//Lo inicializa en 1 para que empiece el jugador 1
       resetFamasPuntos();
       { Get.to(() => MultiNumber() );}
@@ -437,7 +433,7 @@ class FamaController extends GetxController {
             resetFamasPuntos();
             Get.offAllNamed('/');
           }
-              , child: Text('ok'))], //get.back() es para cerrar el dialogo
+              , child: Text('ok'))],
         ); } );
       }
       else{//estamos en multijugador
@@ -459,7 +455,7 @@ class FamaController extends GetxController {
               changePlayer();
               Get.offAllNamed('/');
             }
-                , child: Text('ok'))], //get.back() es para cerrar el dialogo
+                , child: Text('ok'))],
           ); } );
         }
       }
@@ -469,7 +465,7 @@ class FamaController extends GetxController {
     //Ahora borramos el input de la pantalla usando los controllers de los textfields y el de la variable guess
     guess = '';
     for (int i = 0; i < controllers.length; i++) {
-      controllers[i].clear();//check si sirve esto o mejor modifico el texto a vacio
+      controllers[i].clear();
     }
   }
 
