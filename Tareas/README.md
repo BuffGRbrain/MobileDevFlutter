@@ -1,6 +1,6 @@
 # geofusc
 
-A new Flutter project.
+Practice of the geolocator library
 
 ## Getting Started
 
